@@ -3,12 +3,22 @@ import logo from './logo.svg';
 import './App.css';
 import { useObserver } from 'mobx-react';
 import combindStore from './store/combindStore';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import RouteArr from './routes';
 
 function App() {
-  const { todo, todo2} = combindStore();
-  
   return useObserver(() => (
     <div className="App">
+      <BrowserRouter>
+        <Routes>
+          {
+            RouteArr.map((item) => {
+              return (<Route path={item.path} element={item.element} key={item.path}/>);
+            })
+          }
+        </Routes>
+      </BrowserRouter>
+      {/*  
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
@@ -36,6 +46,7 @@ function App() {
           추가하기
         </button>
       </header>
+      */}
     </div>
   ));
 }
