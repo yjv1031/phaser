@@ -1,16 +1,15 @@
 {
   "files": {
     "main.css": "/phaser/static/css/main.073c9b0a.css",
-    "main.js": "/phaser/static/js/main.999c7664.js",
+    "main.js": "/phaser/static/js/main.ef658ea8.js",
     "static/js/787.6707628d.chunk.js": "/phaser/static/js/787.6707628d.chunk.js",
-    "static/media/logo.svg": "/phaser/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/phaser/index.html",
     "main.073c9b0a.css.map": "/phaser/static/css/main.073c9b0a.css.map",
-    "main.999c7664.js.map": "/phaser/static/js/main.999c7664.js.map",
+    "main.ef658ea8.js.map": "/phaser/static/js/main.ef658ea8.js.map",
     "787.6707628d.chunk.js.map": "/phaser/static/js/787.6707628d.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.073c9b0a.css",
-    "static/js/main.999c7664.js"
+    "static/js/main.ef658ea8.js"
   ]
 }
