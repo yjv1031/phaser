@@ -1,6 +1,6 @@
 import { observable } from 'mobx';
 import { Game } from 'phaser';
-import { AvoidBulletsScene } from '../pages/avoidBullets/avoidBulletsScene';
+import AvoidBulletsScene from '../pages/avoidBullets/avoidBulletsScene';
 
 const setting = {
   height: 500,
@@ -8,7 +8,7 @@ const setting = {
 }
 
 interface AvoidBullets {
-  avoidBulletsScene: AvoidBulletsScene|null;
+  avoidBulletsScene: typeof AvoidBulletsScene|null;
   handleCanvas: () => void;
 }
 
@@ -22,13 +22,11 @@ export const AvoidBulletsStore = observable<AvoidBullets>({
       AvoidBulletsGameDiv.removeChild(AvoidBulletsGameDiv.firstChild);
     }
     */
-   debugger;
     if(this.avoidBulletsScene == null) {
-      this.avoidBulletsScene = new AvoidBulletsScene();
+      this.avoidBulletsScene = AvoidBulletsScene;
       this.avoidBulletsScene.gameCreate();
     } else {
       this.avoidBulletsScene.gameDestroy();
-      this.avoidBulletsScene = new AvoidBulletsScene();
       this.avoidBulletsScene.gameCreate();
     }
   }

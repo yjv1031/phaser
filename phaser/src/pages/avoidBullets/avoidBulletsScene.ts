@@ -1,6 +1,6 @@
 import Phaser, { Game } from 'phaser'
 
-export class AvoidBulletsScene extends Phaser.Scene {
+class AvoidBulletsScene extends Phaser.Scene {
   private gameInstance: Game|null = null;
   private gameSetting = {
     width: 1024,
@@ -45,7 +45,6 @@ export class AvoidBulletsScene extends Phaser.Scene {
   }
 
   gameCreate(): void {
-    debugger;
     const game: Phaser.Game = new Phaser.Game({
       width: this.gameSetting.width,
       height: this.gameSetting.height,
@@ -57,7 +56,7 @@ export class AvoidBulletsScene extends Phaser.Scene {
 
   gameDestroy() {
     if(this.gameInstance) {
-      this.gameInstance.destroy(true, true);
+      this.gameInstance.destroy(true, false);
     }
   }
 
@@ -65,3 +64,5 @@ export class AvoidBulletsScene extends Phaser.Scene {
 
   }
 }
+
+export default new AvoidBulletsScene;
