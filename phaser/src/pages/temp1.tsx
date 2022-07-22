@@ -15,6 +15,7 @@ function Temp1() {
                 )
             })
         }
+        <button onClick={() => {todo.addTodo('gggg');}}>추가</button>
     </div>
   ));
 }
