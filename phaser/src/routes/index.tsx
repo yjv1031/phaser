@@ -2,6 +2,7 @@ import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/
 import Temp1 from '../pages/temp1';
 import Temp2 from '../pages/temp2';
 import AvoidBullets from '../pages/avoidBullets/avoidBullets';
+import RoomEscape from '../pages/roomEscape/roomEscape';
 
 export interface RootChildren {
     path: string;
@@ -29,16 +30,16 @@ const RouteArr: Array<Root> = [
     },
     {
         icon: NotificationOutlined,
-        label: '?',
+        label: '방탈출1',
         children: [
             {
-                path: '/phaser/t1',
+                path: '/phaser/roomEscape/game',
                 label: '게임하러가기',
-                element: (<><Temp1 /></>)
+                element: (<><RoomEscape /></>)
             },
             {
                 path: '/phaser/t2',
-                label: '랭킹게시판',
+                label: '자유게시판',
                 element: (<><Temp2 /></>)
             }
         ]
@@ -47,6 +48,16 @@ const RouteArr: Array<Root> = [
         icon: UserOutlined,
         label: '??',
         children: [
+            {
+                path: '/phaser/t1',
+                label: '예시1',
+                element: (<><Temp1 /></>)
+            },
+            {
+                path: '/phaser/t2',
+                label: '예시2',
+                element: (<><Temp2 /></>)
+            }
         ]
     },
 ];
