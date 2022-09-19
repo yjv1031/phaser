@@ -7,7 +7,7 @@ import RouteArr, { RootChildren } from './routes';
 
 import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu } from 'antd';
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.min.css';
 import { Link } from 'react-router-dom';
 const { Header, Content, Sider } = Layout;
 
