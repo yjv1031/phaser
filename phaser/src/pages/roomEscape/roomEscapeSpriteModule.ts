@@ -1,11 +1,16 @@
+const spriteArr = [
+  'lidia',
+  'lidiaRed'
+];
+
+let createSprite = (gameScene: Phaser.Scene) => {
+  spriteArr.forEach((item) => {
+    gameScene.load.spritesheet(`${item}`, `/phaser/resource/${item}.png`, { frameWidth: 64, frameHeight: 64 });
+  });
+}
+
 let createSpriteAnimation = (gameScene: Phaser.Scene) => {
   const anims: Phaser.Animations.AnimationManager = gameScene.anims;
-
-  const spriteArr = [
-    'lidia',
-    'lidiaRed'
-  ];
-
   // Player
   spriteArr.forEach((item) => {
     anims.create({
@@ -28,5 +33,6 @@ let createSpriteAnimation = (gameScene: Phaser.Scene) => {
 }
 
 export {
+  createSprite,
   createSpriteAnimation
 };

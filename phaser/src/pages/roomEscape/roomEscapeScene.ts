@@ -2,24 +2,10 @@ import { Pair } from 'matter';
 import Phaser, { Game } from 'phaser'
 import InputText from 'phaser3-rex-plugins/plugins/inputtext.js';
 import Button from 'phaser3-rex-plugins/plugins/Button.js';
-import {createSpriteAnimation} from './roomEscapeSpriteModule';
-
-interface ChrFlag {
-  downX: number,
-  downY: number,
-  speed: number,
-  position: String,
-  msg: Phaser.GameObjects.Text|null,
-  msgText: string|undefined,
-  msgTimer: number,
-  msgEnterFlag: boolean,
-  spriteName: string
-}
-
-interface CharacterSet {
-  chrFlag: ChrFlag,
-  character: Phaser.GameObjects.Sprite|null
-}
+import {createSprite, createSpriteAnimation} from './roomEscapeSpriteModule';
+import {ChrFlag, CharacterSet} from './roomEscapeInterface';
+import {createCharacter, updateCharacterMove} from './roomEscapeMoveModule';
+import {callWsCreateCharacter,callWsResetList,callWsSendChatMsg,callWsMoveCharacterMsg} from './roomEscapeWsModule';
 
 class RoomEscapeScene extends Phaser.Scene {
   private gameInstance: Game|null = null;
@@ -47,24 +33,8 @@ class RoomEscapeScene extends Phaser.Scene {
     character:  null
   }
 
-  /* 
-  private myCharacter: Phaser.GameObjects.Sprite|null = null;
-  private myCharacterFlag = <ChrFlag>{
-    downX: 300,
-    downY: 500,
-    speed: 5,
-    position: "3",
-    msg: null,
-    msgText: "",
-    msgTimer: 0,
-    msgEnterFlag: true,
-    id: '',
-    spriteName: 'lidiaRed'
-  };
-  */
-
   //기타 멀티플레이어들
-  private orterCharacter: Array<Phaser.GameObjects.Sprite|null> = [];
+  private orterCharacterSet: Array<CharacterSet> = [];
 
   private inputChat: InputText|null = null;
 
@@ -73,132 +43,33 @@ class RoomEscapeScene extends Phaser.Scene {
   }
 
   preload(): void {
-   this.load.spritesheet("lidia", "/phaser/resource/lidia.png", { frameWidth: 64, frameHeight: 64 });
-   this.load.spritesheet("lidiaRed", "/phaser/resource/lidia2.png", { frameWidth: 64, frameHeight: 64 });
+   //스프라이트 리소스 콜
+   createSprite(this);
+
+   //입력버튼 호출
    this.load.image('inputBtn', '/phaser/resource/sopa.png');
   }
   
   create(): void {
-    const paramScene: Phaser.Scene = this;
     //스프라이트 생성펑션
-    createSpriteAnimation(paramScene);
-    
-    //캐릭터 객체 생성
-    this.myCharacterSet.character = this.matter.add.sprite(300, 500, 'lidiaRed', undefined, {label: 'character'}).setScale(1);
+    createSpriteAnimation(this);
 
-    console.log(this.matter.world);
+    //마이캐릭터 생성
+    createCharacter(this, this.myCharacterSet);
 
-    //말풍선
-    this.myCharacterSet.chrFlag.msg = this.add.text(this.myCharacterSet.character.x, this.myCharacterSet.character.y -50, "", {
-        font: "15px Arial",
-        //fill: "#ff0044",
-        align: "center"
-    });
+    this.createInteraction();
 
-    //채팅 입력창 생성
-    this.inputChat = new InputText(this.scene.scene, 400, this.gameSetting.height - 50, 500, 30, {backgroundColor: '#FFFFFF', type: 'text', color: '#000000'}).setInteractive();
-    this.scene.scene.add.existing(this.inputChat);
-    this.inputChat.on('keydown', (inputText: any, e: any) => { 
-      //엔터입력 취급
-      if(e.code == 'NumpadEnter' || e.code == 'Enter') {
-        if(this.myCharacterSet.chrFlag.msgEnterFlag) {
-          if(this.inputChat) {
-            this.myCharacterSet.chrFlag.msgEnterFlag = false;
-            this.myCharacterSet.chrFlag.msgText = this.inputChat.text;
-            this.myCharacterSet.chrFlag.msgTimer = this.gameSetting.msgTimer;
-            this.inputChat.setText("");
-            //연속 입력행위를 제한한다
-            setTimeout(() => {
-              this.myCharacterSet.chrFlag.msgEnterFlag = true;
-            },this.gameSetting.continueTimer);
-          }
-        } else {
-          if(this.inputChat) {
-            this.inputChat.setText("");
-          }
-        }
-      }
-    });
-
-    //채팅데이터 입력 버튼
-    const inputBtn = this.matter.add.sprite(700, this.gameSetting.height - 50, 'inputBtn', undefined, {label: 'inputBtn'}).setScale(0.2).setStatic(true).setInteractive();
-    inputBtn.on('pointerdown', () => {
-      if(this.inputChat) {
-        this.myCharacterSet.chrFlag.msgText = this.inputChat.text;
-        this.inputChat.setText("");
-        this.myCharacterSet.chrFlag.msgTimer = this.gameSetting.msgTimer;
-      }
-    });
-    
-    //마우스 바닥 클릭 이벤트
-    this.input.on('pointerdown', (event: any, param: any) => {
-      if(event.downY < this.gameSetting.height - 100){
-        this.myCharacterSet.chrFlag.downX = event.downX;
-        this.myCharacterSet.chrFlag.downY = event.downY;
-      }
-    });
+    callWsCreateCharacter(this.setMyCharacterId, this.resetCharacters, this.receiveMoveMsg);
   }
   
   update(time: number, delta: number): void {
-    //캐릭터 움직임
-    
-    if(this.myCharacterSet.character) {
-      //캐릭터의 목표 방향과 실제 캐릭터의 위치를 계산하여 무빙한다
-      if(Math.abs(this.myCharacterSet.chrFlag.downY - this.myCharacterSet.character.y) >= this.myCharacterSet.chrFlag.speed * 2 || Math.abs(this.myCharacterSet.chrFlag.downX - this.myCharacterSet.character.x) >= this.myCharacterSet.chrFlag.speed * 2) {
-        const downY = this.myCharacterSet.chrFlag.downY;
-        const downX = this.myCharacterSet.chrFlag.downX;
-        const curY = this.myCharacterSet.character.y;
-        const curX = this.myCharacterSet.character.x;
-        //두점의 거리를 계산한다
-        let y = (downY - curY) / Math.sqrt( Math.pow((downY - curY),2) + Math.pow((downX - curX),2) );
-        //y = curY < downY ? y : -y;
-
-        let x = (downX - curX) / Math.sqrt( Math.pow((downY - curY),2) + Math.pow((downX - curX),2) );
-        //x = curX < downX ? x : -x;
-
-        this.myCharacterSet.character.y += y * this.myCharacterSet.chrFlag.speed;
-        this.myCharacterSet.character.x += x * this.myCharacterSet.chrFlag.speed;
-        
-        //캐릭터가 바라보고 있는 방향 설정
-        // 1 => 위 , 2 => 오른쪽, 3 => 아래, 4 => 왼쪽
-        const curP = this.myCharacterSet.chrFlag.position;
-        let characterP = `${this.myCharacterSet.chrFlag.spriteName}3`;
-        if( y < 0 && Math.abs(y) >= Math.abs(x) ) {
-          characterP = `${this.myCharacterSet.chrFlag.spriteName}1`;
-        } else if( x > 0 && Math.abs(y) <= Math.abs(x) ) {
-          characterP = `${this.myCharacterSet.chrFlag.spriteName}2`;
-        } else if( y > 0 && Math.abs(y) >= Math.abs(x) ) {
-          characterP = `${this.myCharacterSet.chrFlag.spriteName}3`;
-        } else {
-          characterP = `${this.myCharacterSet.chrFlag.spriteName}4`;
-        }
-
-        //캐릭터가 바라보는 방향이 변경된 경우이다
-        if(curP != characterP) {
-          this.myCharacterSet.chrFlag.position = characterP;
-          this.myCharacterSet.character.anims.stop();
-          this.myCharacterSet.character.anims.play(String(characterP), true);
-        }
-
-        //말풍선이 함께 무빙
-        this.myCharacterSet.chrFlag.msg?.setX(this.myCharacterSet.character.x);
-        this.myCharacterSet.chrFlag.msg?.setY(this.myCharacterSet.character.y - 50);
-        
-      } else {
-        //정지되어 있는 상태
-        this.myCharacterSet.character.anims.stop();
-      }
-
-      //채팅내용 동기화
-      if(this.myCharacterSet.chrFlag.msgText) {
-        if(this.myCharacterSet.chrFlag.msgTimer > 0) {
-          this.myCharacterSet.chrFlag.msg?.setText(this.myCharacterSet.chrFlag.msgText);
-          this.myCharacterSet.chrFlag.msgTimer -= 1;
-        } else {
-          this.myCharacterSet.chrFlag.msg?.setText("");
-          this.myCharacterSet.chrFlag.msgTimer = 0;
-        }
-      }
+    //캐릭터 움직임 갱신
+    try {
+      updateCharacterMove(this.myCharacterSet);
+      this.orterCharacterSet.forEach((characterSet) => {updateCharacterMove(characterSet);})
+    } catch(e) {
+      console.log(`에러 ${this.orterCharacterSet.length}, myId: ${this.myCharacterSet.chrFlag.id}`);
+      //, ${this.orterCharacterSet[0].chrFlag.id}, ${this.orterCharacterSet[1].chrFlag.id}
     }
   }
 
@@ -234,6 +105,156 @@ class RoomEscapeScene extends Phaser.Scene {
     if(this.gameInstance) {
       this.gameInstance.destroy(true, false);
     }
+  }
+
+  //서버에서 나의 세션아이디를 세팅하는 함수
+  setMyCharacterId = (id: string) => {
+    this.myCharacterSet.chrFlag.id = id;
+
+    const param = {
+      flag: 're',
+      downX: this.myCharacterSet.chrFlag.downX,
+      downY: this.myCharacterSet.chrFlag.downY,
+      speed: this.myCharacterSet.chrFlag.speed,
+      id: this.myCharacterSet.chrFlag.id,
+      spriteName: this.myCharacterSet.chrFlag.spriteName
+    };
+    callWsResetList(param);
+  }
+
+  //서버에서 다른사람의 채팅메세지를 전달 받았을 때 세팅하는 함수
+  receiveChatMsg = () => {
+
+  }
+
+  //서버에서 다른사람의 움직임을 전달받았을 경우
+  receiveMoveMsg = (param: any) => {
+    const id = param.id;
+    this.orterCharacterSet.forEach((item) => {
+      if(item.chrFlag.id == id) {
+        item.chrFlag.downX = param.downX;
+        item.chrFlag.downY = param.downY;
+      }
+    });
+  }
+
+  //서버에서 모든 사람들의 데이터를 전달받았을 경우
+  resetCharacters = (onlineCharacterSetList: Array<any>) => {
+    //루프를 순회한다.
+    //해당 인원이 새로 발견된 경우, 이미 기존에 있는 경우, 사라진 경우를 분기한다
+    //플레이어 자신에 대한 행위는 제외하고 진행
+    const myId = this.myCharacterSet.chrFlag.id;
+    //자기 자신은 제외하고 처리한다
+    let onlineList = onlineCharacterSetList.filter((item) => {return myId != item.sessionId});
+
+    for(let i= this.orterCharacterSet.length - 1; i>=0; i--) {
+      console.log(i);
+      const tempCharId = this.orterCharacterSet[i].chrFlag.id;
+      let existFlag = false;
+      for(let j=0; j<onlineList.length; j++) {
+        const online = onlineList[j];
+        const onlineId = online.sessionId;
+        if(onlineId == tempCharId) {
+          existFlag = true;
+          //서버 캐릭터 리스트에서 삭제한다
+          onlineList = onlineList.splice(j,1);
+          break;
+        }
+      }
+
+      if(!existFlag) {
+        //서버에 해당 플레이어가 존재하지 않는 경우 
+        //해당 유저를 삭제한다
+        
+        if(this.orterCharacterSet[i]) {
+          const tempSheet = this.orterCharacterSet[i];
+          this.orterCharacterSet = this.orterCharacterSet.filter((item, idx) => {return i != idx});
+          tempSheet.character?.destroy();
+        }
+      }
+    }
+
+
+    //서버에는 있지만 현재 클라이언트에 없는 캐릭터를 생성
+    for(let i=0; i<onlineList.length; i++) {
+      const tempChrFlag: ChrFlag = {
+        downX: onlineList[i].downX,
+        downY: onlineList[i].downX,
+        speed: onlineList[i].speed,
+        position: "3",
+        msg: null,
+        msgText: "",
+        msgTimer: 0,
+        msgEnterFlag: true,
+        id: onlineList[i].sessionId,
+        spriteName: onlineList[i].spriteName
+      }
+      const param = {
+        chrFlag: tempChrFlag,
+        character: null
+      }
+      createCharacter(this, param);
+      this.orterCharacterSet.push(param);
+    }
+  }
+
+  //사용자 조작 이벤트 관련
+  createInteraction() {
+    //사용자 입력 부분
+    //채팅 입력창 생성
+    this.inputChat = new InputText(this.scene.scene, 400, this.gameSetting.height - 50, 500, 30, {backgroundColor: '#FFFFFF', type: 'text', color: '#000000'}).setInteractive();
+    this.scene.scene.add.existing(this.inputChat);
+    this.inputChat.on('keydown', (inputText: any, e: any) => { 
+      //엔터입력 취급
+      if(e.code == 'NumpadEnter' || e.code == 'Enter') {
+        if(this.myCharacterSet.chrFlag.msgEnterFlag) {
+          if(this.inputChat) {
+            this.myCharacterSet.chrFlag.msgEnterFlag = false;
+            this.myCharacterSet.chrFlag.msgText = this.inputChat.text;
+            this.myCharacterSet.chrFlag.msgTimer = this.gameSetting.msgTimer;
+            this.inputChat.setText("");
+            callWsSendChatMsg(this.myCharacterSet.chrFlag.msgText, this.myCharacterSet.chrFlag.id);
+            //연속 입력행위를 제한한다
+            setTimeout(() => {
+              this.myCharacterSet.chrFlag.msgEnterFlag = true;
+            },this.gameSetting.continueTimer);
+          }
+        } else {
+          if(this.inputChat) {
+            this.inputChat.setText("");
+          }
+        }
+      }
+
+    });
+
+    //채팅데이터 입력 버튼
+    const inputBtn = this.matter.add.sprite(700, this.gameSetting.height - 50, 'inputBtn', undefined, {label: 'inputBtn'}).setScale(0.2).setStatic(true).setInteractive();
+    inputBtn.on('pointerdown', () => {
+      if(this.inputChat) {
+        this.myCharacterSet.chrFlag.msgText = this.inputChat.text;
+        this.myCharacterSet.chrFlag.msgTimer = this.gameSetting.msgTimer;
+        this.inputChat.setText("");
+        callWsSendChatMsg(this.myCharacterSet.chrFlag.msgText, this.myCharacterSet.chrFlag.id);
+      }
+    });
+    
+    //마우스 바닥 클릭 이벤트
+    this.input.on('pointerdown', (event: any, param: any) => {
+      if(event.downY < this.gameSetting.height - 100){
+        this.myCharacterSet.chrFlag.downX = event.downX;
+        this.myCharacterSet.chrFlag.downY = event.downY;
+        const param = {
+          flag: 'move',
+          downX: this.myCharacterSet.chrFlag.downX,
+          downY: this.myCharacterSet.chrFlag.downY,
+          speed: this.myCharacterSet.chrFlag.speed,
+          id: this.myCharacterSet.chrFlag.id,
+          spriteName: this.myCharacterSet.chrFlag.spriteName
+        }
+        callWsMoveCharacterMsg(param);
+      }
+    });
   }
 }
 
