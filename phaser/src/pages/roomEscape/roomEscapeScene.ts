@@ -2,6 +2,7 @@ import { Pair } from 'matter';
 import Phaser, { Game } from 'phaser'
 import InputText from 'phaser3-rex-plugins/plugins/inputtext.js';
 import Button from 'phaser3-rex-plugins/plugins/Button.js';
+import {createSpriteAnimation} from './roomEscapeSpriteModule';
 
 interface ChrFlag {
   downX: number,
@@ -11,7 +12,13 @@ interface ChrFlag {
   msg: Phaser.GameObjects.Text|null,
   msgText: string|undefined,
   msgTimer: number,
-  msgEnterFlag: boolean
+  msgEnterFlag: boolean,
+  spriteName: string
+}
+
+interface CharacterSet {
+  chrFlag: ChrFlag,
+  character: Phaser.GameObjects.Sprite|null
 }
 
 class RoomEscapeScene extends Phaser.Scene {
@@ -22,9 +29,26 @@ class RoomEscapeScene extends Phaser.Scene {
     msgTimer: 200,
     continueTimer: 200
   }
-  private myCharacter: Phaser.GameObjects.Sprite|null = null;
-  private inputBtn: Phaser.GameObjects.Image|null = null;
 
+  //나의 캐릭터 객체
+  private myCharacterSet = <CharacterSet>{
+    chrFlag: {
+      downX: 300,
+      downY: 500,
+      speed: 5,
+      position: "3",
+      msg: null,
+      msgText: "",
+      msgTimer: 0,
+      msgEnterFlag: true,
+      id: '',
+      spriteName: 'lidiaRed'
+    },
+    character:  null
+  }
+
+  /* 
+  private myCharacter: Phaser.GameObjects.Sprite|null = null;
   private myCharacterFlag = <ChrFlag>{
     downX: 300,
     downY: 500,
@@ -33,8 +57,14 @@ class RoomEscapeScene extends Phaser.Scene {
     msg: null,
     msgText: "",
     msgTimer: 0,
-    msgEnterFlag: true
+    msgEnterFlag: true,
+    id: '',
+    spriteName: 'lidiaRed'
   };
+  */
+
+  //기타 멀티플레이어들
+  private orterCharacter: Array<Phaser.GameObjects.Sprite|null> = [];
 
   private inputChat: InputText|null = null;
 
@@ -44,18 +74,22 @@ class RoomEscapeScene extends Phaser.Scene {
 
   preload(): void {
    this.load.spritesheet("lidia", "/phaser/resource/lidia.png", { frameWidth: 64, frameHeight: 64 });
+   this.load.spritesheet("lidiaRed", "/phaser/resource/lidia2.png", { frameWidth: 64, frameHeight: 64 });
    this.load.image('inputBtn', '/phaser/resource/sopa.png');
   }
   
   create(): void {
-    this.createSpriteAnimation();
+    const paramScene: Phaser.Scene = this;
+    //스프라이트 생성펑션
+    createSpriteAnimation(paramScene);
+    
     //캐릭터 객체 생성
-    this.myCharacter = this.matter.add.sprite(300, 500, 'lidia', undefined, {label: 'character'}).setScale(1);
+    this.myCharacterSet.character = this.matter.add.sprite(300, 500, 'lidiaRed', undefined, {label: 'character'}).setScale(1);
 
     console.log(this.matter.world);
 
     //말풍선
-    this.myCharacterFlag.msg = this.add.text(this.myCharacter.x, this.myCharacter.y -50, "", {
+    this.myCharacterSet.chrFlag.msg = this.add.text(this.myCharacterSet.character.x, this.myCharacterSet.character.y -50, "", {
         font: "15px Arial",
         //fill: "#ff0044",
         align: "center"
@@ -67,15 +101,15 @@ class RoomEscapeScene extends Phaser.Scene {
     this.inputChat.on('keydown', (inputText: any, e: any) => { 
       //엔터입력 취급
       if(e.code == 'NumpadEnter' || e.code == 'Enter') {
-        if(this.myCharacterFlag.msgEnterFlag) {
+        if(this.myCharacterSet.chrFlag.msgEnterFlag) {
           if(this.inputChat) {
-            this.myCharacterFlag.msgEnterFlag = false;
-            this.myCharacterFlag.msgText = this.inputChat.text;
-            this.myCharacterFlag.msgTimer = this.gameSetting.msgTimer;
+            this.myCharacterSet.chrFlag.msgEnterFlag = false;
+            this.myCharacterSet.chrFlag.msgText = this.inputChat.text;
+            this.myCharacterSet.chrFlag.msgTimer = this.gameSetting.msgTimer;
             this.inputChat.setText("");
             //연속 입력행위를 제한한다
             setTimeout(() => {
-              this.myCharacterFlag.msgEnterFlag = true;
+              this.myCharacterSet.chrFlag.msgEnterFlag = true;
             },this.gameSetting.continueTimer);
           }
         } else {
@@ -90,29 +124,31 @@ class RoomEscapeScene extends Phaser.Scene {
     const inputBtn = this.matter.add.sprite(700, this.gameSetting.height - 50, 'inputBtn', undefined, {label: 'inputBtn'}).setScale(0.2).setStatic(true).setInteractive();
     inputBtn.on('pointerdown', () => {
       if(this.inputChat) {
-        this.myCharacterFlag.msgText = this.inputChat.text;
+        this.myCharacterSet.chrFlag.msgText = this.inputChat.text;
         this.inputChat.setText("");
-        this.myCharacterFlag.msgTimer = this.gameSetting.msgTimer;
+        this.myCharacterSet.chrFlag.msgTimer = this.gameSetting.msgTimer;
       }
     });
     
     //마우스 바닥 클릭 이벤트
     this.input.on('pointerdown', (event: any, param: any) => {
       if(event.downY < this.gameSetting.height - 100){
-        this.myCharacterFlag.downX = event.downX;
-        this.myCharacterFlag.downY = event.downY;
+        this.myCharacterSet.chrFlag.downX = event.downX;
+        this.myCharacterSet.chrFlag.downY = event.downY;
       }
     });
   }
   
   update(time: number, delta: number): void {
-    if(this.myCharacter) {
+    //캐릭터 움직임
+    
+    if(this.myCharacterSet.character) {
       //캐릭터의 목표 방향과 실제 캐릭터의 위치를 계산하여 무빙한다
-      if(Math.abs(this.myCharacterFlag.downY - this.myCharacter.y) >= this.myCharacterFlag.speed * 2 || Math.abs(this.myCharacterFlag.downX - this.myCharacter.x) >= this.myCharacterFlag.speed * 2) {
-        const downY = this.myCharacterFlag.downY;
-        const downX = this.myCharacterFlag.downX;
-        const curY = this.myCharacter.y;
-        const curX = this.myCharacter.x;
+      if(Math.abs(this.myCharacterSet.chrFlag.downY - this.myCharacterSet.character.y) >= this.myCharacterSet.chrFlag.speed * 2 || Math.abs(this.myCharacterSet.chrFlag.downX - this.myCharacterSet.character.x) >= this.myCharacterSet.chrFlag.speed * 2) {
+        const downY = this.myCharacterSet.chrFlag.downY;
+        const downX = this.myCharacterSet.chrFlag.downX;
+        const curY = this.myCharacterSet.character.y;
+        const curX = this.myCharacterSet.character.x;
         //두점의 거리를 계산한다
         let y = (downY - curY) / Math.sqrt( Math.pow((downY - curY),2) + Math.pow((downX - curX),2) );
         //y = curY < downY ? y : -y;
@@ -120,47 +156,47 @@ class RoomEscapeScene extends Phaser.Scene {
         let x = (downX - curX) / Math.sqrt( Math.pow((downY - curY),2) + Math.pow((downX - curX),2) );
         //x = curX < downX ? x : -x;
 
-        this.myCharacter.y += y * this.myCharacterFlag.speed;
-        this.myCharacter.x += x * this.myCharacterFlag.speed;
+        this.myCharacterSet.character.y += y * this.myCharacterSet.chrFlag.speed;
+        this.myCharacterSet.character.x += x * this.myCharacterSet.chrFlag.speed;
         
         //캐릭터가 바라보고 있는 방향 설정
         // 1 => 위 , 2 => 오른쪽, 3 => 아래, 4 => 왼쪽
-        const curP = this.myCharacterFlag.position;
-        let characterP = "3";
+        const curP = this.myCharacterSet.chrFlag.position;
+        let characterP = `${this.myCharacterSet.chrFlag.spriteName}3`;
         if( y < 0 && Math.abs(y) >= Math.abs(x) ) {
-          characterP = "1";
+          characterP = `${this.myCharacterSet.chrFlag.spriteName}1`;
         } else if( x > 0 && Math.abs(y) <= Math.abs(x) ) {
-          characterP = "2";
+          characterP = `${this.myCharacterSet.chrFlag.spriteName}2`;
         } else if( y > 0 && Math.abs(y) >= Math.abs(x) ) {
-          characterP = "3";
+          characterP = `${this.myCharacterSet.chrFlag.spriteName}3`;
         } else {
-          characterP = "4";
+          characterP = `${this.myCharacterSet.chrFlag.spriteName}4`;
         }
 
         //캐릭터가 바라보는 방향이 변경된 경우이다
         if(curP != characterP) {
-          this.myCharacterFlag.position = characterP;
-          this.myCharacter.anims.stop();
-          this.myCharacter.anims.play(String(characterP), true);
+          this.myCharacterSet.chrFlag.position = characterP;
+          this.myCharacterSet.character.anims.stop();
+          this.myCharacterSet.character.anims.play(String(characterP), true);
         }
 
         //말풍선이 함께 무빙
-        this.myCharacterFlag.msg?.setX(this.myCharacter.x);
-        this.myCharacterFlag.msg?.setY(this.myCharacter.y - 50);
+        this.myCharacterSet.chrFlag.msg?.setX(this.myCharacterSet.character.x);
+        this.myCharacterSet.chrFlag.msg?.setY(this.myCharacterSet.character.y - 50);
         
       } else {
         //정지되어 있는 상태
-        this.myCharacter.anims.stop();
+        this.myCharacterSet.character.anims.stop();
       }
 
       //채팅내용 동기화
-      if(this.myCharacterFlag.msgText) {
-        if(this.myCharacterFlag.msgTimer > 0) {
-          this.myCharacterFlag.msg?.setText(this.myCharacterFlag.msgText);
-          this.myCharacterFlag.msgTimer -= 1;
+      if(this.myCharacterSet.chrFlag.msgText) {
+        if(this.myCharacterSet.chrFlag.msgTimer > 0) {
+          this.myCharacterSet.chrFlag.msg?.setText(this.myCharacterSet.chrFlag.msgText);
+          this.myCharacterSet.chrFlag.msgTimer -= 1;
         } else {
-          this.myCharacterFlag.msg?.setText("");
-          this.myCharacterFlag.msgTimer = 0;
+          this.myCharacterSet.chrFlag.msg?.setText("");
+          this.myCharacterSet.chrFlag.msgTimer = 0;
         }
       }
     }
@@ -192,27 +228,6 @@ class RoomEscapeScene extends Phaser.Scene {
       }
     })
     this.gameInstance = game;
-  }
-
-  createSpriteAnimation(): void {
-    const anims = this.anims;
-    // Player
-    anims.create({
-        key: "4", frameRate: 10, repeat: -1,
-        frames: this.anims.generateFrameNumbers('lidia', { start: 9, end: 17 }),
-    });
-    anims.create({
-        key: "2", frameRate: 10, repeat: -1,
-        frames: this.anims.generateFrameNumbers('lidia', { start: 27, end: 35 }),
-    });
-    anims.create({
-        key: "1", frameRate: 10, repeat: -1,
-        frames: this.anims.generateFrameNumbers('lidia', { start: 0, end: 8 }),
-    });
-    anims.create({
-        key: "3", frameRate: 10, repeat: -1,
-        frames: this.anims.generateFrameNumbers('lidia', { start: 18, end: 26 }),
-    });
   }
 
   gameDestroy() {
