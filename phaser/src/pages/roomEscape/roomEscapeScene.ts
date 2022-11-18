@@ -10,7 +10,7 @@ import {callWsCreateCharacter,callWsResetList,callWsSendChatMsg,callWsMoveCharac
 class RoomEscapeScene extends Phaser.Scene {
   private gameInstance: Game|null = null;
   private gameSetting = {
-    width: 1024,
+    width: 1600,
     height: 768,
     msgTimer: 200,
     continueTimer: 200
@@ -59,7 +59,7 @@ class RoomEscapeScene extends Phaser.Scene {
 
     this.createInteraction();
 
-    callWsCreateCharacter(this.setMyCharacterId, this.resetCharacters, this.receiveMoveMsg);
+    callWsCreateCharacter(this.setMyCharacterId, this.resetCharacters, this.receiveMoveMsg, this.receiveChatMsg);
   }
   
   update(time: number, delta: number): void {
@@ -123,8 +123,15 @@ class RoomEscapeScene extends Phaser.Scene {
   }
 
   //서버에서 다른사람의 채팅메세지를 전달 받았을 때 세팅하는 함수
-  receiveChatMsg = () => {
-
+  receiveChatMsg = (param: any) => {
+    const id = param.id;
+    this.orterCharacterSet.forEach((item) => {
+      if(item.chrFlag.id == id) {
+        //!!!!!!
+        item.chrFlag.msgText = param.msg;
+        item.chrFlag.msgTimer = this.gameSetting.msgTimer;
+      }
+    });
   }
 
   //서버에서 다른사람의 움직임을 전달받았을 경우
@@ -157,7 +164,7 @@ class RoomEscapeScene extends Phaser.Scene {
         if(onlineId == tempCharId) {
           existFlag = true;
           //서버 캐릭터 리스트에서 삭제한다
-          onlineList = onlineList.splice(j,1);
+          onlineList = onlineList.filter((item, idx) => {return j != idx});
           break;
         }
       }
@@ -179,7 +186,7 @@ class RoomEscapeScene extends Phaser.Scene {
     for(let i=0; i<onlineList.length; i++) {
       const tempChrFlag: ChrFlag = {
         downX: onlineList[i].downX,
-        downY: onlineList[i].downX,
+        downY: onlineList[i].downY,
         speed: onlineList[i].speed,
         position: "3",
         msg: null,

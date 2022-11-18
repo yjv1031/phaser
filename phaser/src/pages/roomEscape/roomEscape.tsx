@@ -2,7 +2,7 @@ import { useObserver } from 'mobx-react';
 import { useEffect, useRef, useState } from 'react';
 import { RoomEscapeStore } from '../../store/roomEscapeStore';
 
-function AvoidBullets() {
+function RoomEscape() {
   const roomEscapeStore = RoomEscapeStore;
 
   useEffect(() => {
@@ -16,4 +16,4 @@ function AvoidBullets() {
   ));
 }
 
-export default AvoidBullets;
+export default RoomEscape;

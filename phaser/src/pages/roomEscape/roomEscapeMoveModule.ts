@@ -2,7 +2,12 @@ import {ChrFlag, CharacterSet} from './roomEscapeInterface';
 
 const createCharacter = (gameScene: Phaser.Scene, characterSet: CharacterSet) => {
   //캐릭터 객체 생성
-  characterSet.character = gameScene.matter.add.sprite(300, 500, 'lidiaRed', undefined, {label: 'character'}).setScale(1);
+  const spriteName = characterSet.chrFlag.spriteName;
+  characterSet.character = gameScene.matter.add.sprite(characterSet.chrFlag.downX, characterSet.chrFlag.downY, spriteName, undefined, {label: 'character'}).setScale(1);
+  // characterSet.character = gameScene.matter.add.sprite(100, 100, 'lidiaRed', undefined, {label: 'character'}).setScale(1);
+  //캐릭터가 앞을 바라보게 설정한다
+  characterSet.character.anims.play(String(`${spriteName}3`), true);
+  //characterSet.character.anims.stop();
 
   //말풍선
   characterSet.chrFlag.msg = gameScene.add.text(characterSet.character.x, characterSet.character.y -50, "", {

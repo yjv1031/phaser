@@ -1,10 +1,10 @@
 import {ChrFlag, CharacterSet} from './roomEscapeInterface';
 
-const serverUrl = 'ws://localhost:8080/webSocket';
+const serverUrl = 'ws://172.30.1.48:8080/webSocket';
 let ws: WebSocket|null = null;
 
 //서버에 나의 새로운 캐릭터에 대한 메세지를 전달한다
-const callWsCreateCharacter = (setMyCharacterId: Function, resetCharacters: Function, receiveMoveMsg: Function) => {
+const callWsCreateCharacter = (setMyCharacterId: Function, resetCharacters: Function, receiveMoveMsg: Function, receiveChatMsg: Function) => {
   if(ws !== null) {
     //연결종료
     ws.close();
@@ -25,6 +25,8 @@ const callWsCreateCharacter = (setMyCharacterId: Function, resetCharacters: Func
       resetCharacters(data.characterList);
     } else if(flag == 'move') {
       receiveMoveMsg(data);
+    } else if(flag == 'msg') {
+      receiveChatMsg(data);
     }
   }
 }
@@ -55,17 +57,9 @@ const callWsMoveCharacterMsg = (param: object) => {
   }
 }
 
-//사용자가 서버로 부터 받은 메세지 처리
-const callWsRecieveMsg = () => {
-  if(ws !== null) {
-
-  }
-}
-
 export {
   callWsCreateCharacter,
   callWsResetList,
   callWsSendChatMsg,
-  callWsMoveCharacterMsg,
-  callWsRecieveMsg
+  callWsMoveCharacterMsg
 };

@@ -22,6 +22,9 @@ export const AvoidBulletsStore = observable<AvoidBullets>({
       AvoidBulletsGameDiv.removeChild(AvoidBulletsGameDiv.firstChild);
     }
     */
+
+    /*
+
     if(this.avoidBulletsScene == null) {
       this.avoidBulletsScene = AvoidBulletsScene;
       this.avoidBulletsScene.gameCreate();
@@ -29,5 +32,6 @@ export const AvoidBulletsStore = observable<AvoidBullets>({
       this.avoidBulletsScene.gameDestroy();
       this.avoidBulletsScene.gameCreate();
     }
+    */
   }
 });

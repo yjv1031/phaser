@@ -7,6 +7,9 @@ const setting = {
   width: 1000,
 }
 
+const gameOption = {
+}
+
 interface RoomEscape {
   roomEscapeScene: typeof RoomEscapeScene|null;
   handleCanvas: () => void;
@@ -15,6 +18,7 @@ interface RoomEscape {
 export const RoomEscapeStore = observable<RoomEscape>({
   roomEscapeScene: null,
   handleCanvas() {
+    //다이얼로그 호출
     if(this.roomEscapeScene == null) {
       this.roomEscapeScene = RoomEscapeScene;
       this.roomEscapeScene.gameCreate();

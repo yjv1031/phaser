@@ -4,6 +4,7 @@ import './App.css';
 import { useObserver } from 'mobx-react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import RouteArr, { RootChildren } from './routes';
+import RoomEscape from './pages/roomEscape/roomEscape';
 
 import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu } from 'antd';
@@ -33,6 +34,12 @@ const items2 = RouteArr.map((row, idx) => {
 
 const routeList: Array<RootChildren> = (new Array<RootChildren>).concat(...(RouteArr.map(item => item.children)));
 
+const App = () => useObserver(() => (
+  <div className='wrap'>
+    <RoomEscape></RoomEscape>
+  </div>
+));
+/* 
 const App = () => useObserver(() => (
   <BrowserRouter>
     <Layout>
@@ -116,5 +123,6 @@ const App = () => useObserver(() => (
     </Layout>
   </BrowserRouter>
 ));
+*/
 
 export default App;
