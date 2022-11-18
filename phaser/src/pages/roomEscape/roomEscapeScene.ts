@@ -10,8 +10,8 @@ import {callWsCreateCharacter,callWsResetList,callWsSendChatMsg,callWsMoveCharac
 class RoomEscapeScene extends Phaser.Scene {
   private gameInstance: Game|null = null;
   private gameSetting = {
-    width: 1600,
-    height: 768,
+    width: 1200,
+    height: 900,
     msgTimer: 200,
     continueTimer: 200
   }
