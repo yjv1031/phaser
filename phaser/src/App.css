@@ -45,3 +45,111 @@ body, html {
   width: 1200px;
   margin: 0 auto;
 }
+
+#RoomEscapeGameReadyArea {
+  width: 100%;
+  height: 600px;
+  padding: 100px;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.RoomEscapeCharacterSelectPopup {
+  width: 600px;
+  height: 400px;
+  top: 10px;
+  margin: 0 auto;
+  background-color: lightsteelblue;
+  border: 5px solid black;
+  border-radius: 20px;
+  box-sizing: border-box;
+}
+
+.RoomEscapeCharacterSelectPopupQuestion1 {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.RoomEscapeCharacterSelectList {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  justify-content: center;
+  width: 400px;
+  height: 250px;
+  margin: 0 auto;
+  background-color: rgba(33, 122, 244, .1);
+}
+
+.characterItem {
+  overflow: hidden;
+  width: 100px;
+  height: 100px;
+  background-color: white;
+  margin: 10px;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.characterItem>img {
+  display: block;
+  width: 100%;
+}
+
+.characterSelectBorder {
+  border: 2px solid red;
+}
+
+.RoomEscapeCharacterSelectPopupQuestion2 {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.RoomEscapeCharacterSelectPopupQuestion2AnswerArea {
+  display: flex;
+  justify-content: center;
+}
+
+.RoomEscapeCharacterSelectPopupQuestion2input {
+  display: block;
+  margin-right: 20px;
+}
+
+.RoomEscapeCharacterSelectPopupQuestion2Btn {
+  display: block;
+  background-color: lime;
+}
+
+#RoomEscapeGameChatArea {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  float: left;
+  width: 400px;
+  height: 600px;
+  padding: 10px;
+  background-color: paleturquoise;
+  box-sizing: border-box;
+}
+
+#RoomEscapeGameDiv {
+  float: left;
+  width: 800px;
+}
+
+.customscroll::-webkit-scrollbar {
+  width: 10px;  /* 스크롤바의 너비 */
+}
+
+.customscroll::-webkit-scrollbar-thumb {
+  height: 30%; /* 스크롤바의 길이 */
+  background: #217af4; /* 스크롤바의 색상 */
+  border-radius: 10px;
+}
+
+.customscroll::-webkit-scrollbar-track {
+  background: rgba(33, 122, 244, .1);  /*스크롤바 뒷 배경 색상*/
+}
+
+.display_none {
+  display: none;
+}

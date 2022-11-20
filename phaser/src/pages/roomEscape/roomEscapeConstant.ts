@@ -1,4 +1,6 @@
-const playerSprite: any = [
+import {CharacterSheet} from './roomEscapeInterface';
+
+const playerSprite: Array<CharacterSheet> = [
   {
     name: 'lidia',
     sumnail: 'lidia_sum'
@@ -6,9 +8,15 @@ const playerSprite: any = [
   {
     name: 'lidiaRed',
     sumnail: 'lidiaRed_sum'
-  }
+  },
 ];
 
+const resourcePath: any = {
+  playerSpritePath: 'player',
+  objectPath: 'object'
+}
+
 export {
-  playerSprite
+  playerSprite,
+  resourcePath
 };

@@ -1,8 +1,9 @@
 import {playerSprite} from './roomEscapeConstant';
+import {resourcePath} from './roomEscapeConstant';
 
 let createSprite = (gameScene: Phaser.Scene) => {
   playerSprite.forEach((item: any) => {
-    gameScene.load.spritesheet(`${item.name}`, `/phaser/resource/${item.name}.png`, { frameWidth: 64, frameHeight: 64 });
+    gameScene.load.spritesheet(`${item.name}`, `/phaser/resource/${resourcePath.playerSpritePath}/${item.name}.png`, { frameWidth: 64, frameHeight: 64 });
   });
 }
 

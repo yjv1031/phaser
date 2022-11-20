@@ -1,5 +1,6 @@
 import {ChrFlag, CharacterSet} from './roomEscapeInterface';
 
+
 // const serverUrl = 'ws://172.30.1.48:8080/webSocket';
 const serverUrl = 'ws://localhost:8080/webSocket';
 let ws: WebSocket|null = null;
@@ -16,7 +17,6 @@ const callWsCreateCharacter = (setMyCharacterId: Function, resetCharacters: Func
   //서버에서 데이터를 전달받았을때 처리
   ws.onmessage = function(msg) {
     const data = JSON.parse(msg.data);
-    console.log(data);
     const flag = data.flag;
     if(flag == 'se') {
       const id = data.msg;
@@ -40,12 +40,13 @@ const callWsResetList = (data: object) => {
 }
 
 //사용자가 채팅을 입력했을때 전달한다.
-const callWsSendChatMsg = (msg: string, id: string) => {
+const callWsSendChatMsg = (msg: string, id: string, nick: string) => {
   if(ws !== null) {
     const param = {
       flag: 'msg',
       msg: msg,
-      id: id
+      id: id,
+      nick: nick
     };
     ws.send(JSON.stringify(param));
   }
