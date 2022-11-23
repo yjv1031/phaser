@@ -51,6 +51,9 @@ class RoomEscapeScene extends Phaser.Scene {
    //스프라이트 리소스 콜
    createSprite(this);
 
+   //배경타일 로딩
+   this.load.image('tile', `/phaser/resource/${resourcePath.objectPath}/tile.png`);
+
    //입력버튼 호출
    this.load.image('inputBtn', `/phaser/resource/${resourcePath.objectPath}/inputBtn.png`);
    //내 캐릭터 표시 이미지 호출
@@ -60,6 +63,9 @@ class RoomEscapeScene extends Phaser.Scene {
   create(): void {
     //스프라이트 생성펑션
     createSpriteAnimation(this);
+
+    //바닥 타일 생성
+    this.add.image(400, 225, 'tile');
 
     this.myCharacterSet.chrFlag.spriteName = RoomEscapeStore.mySprite;
     this.myCharacterSet.chrFlag.nick = RoomEscapeStore.myNick;
