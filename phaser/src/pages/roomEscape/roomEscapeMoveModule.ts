@@ -10,10 +10,11 @@ const createCharacter = (gameScene: Phaser.Scene, characterSet: CharacterSet, my
   //characterSet.character.anims.stop();
 
   //말풍선
-  characterSet.chrFlag.msg = gameScene.add.text(characterSet.character.x, characterSet.character.y - 35, "", {
-      font: "12px Arial",
-      //fill: "#ff0044",
-      align: "center"
+  characterSet.chrFlag.msg = gameScene.add.text(characterSet.character.x, characterSet.character.y - 40, "", {
+    font: "20px Ycomputer-Regular",
+    color: "#33ff33",
+    backgroundColor: "#000000",
+    align: "center"
   });
 
   //나의 캐릭터일 경우 표시해준다
@@ -63,7 +64,7 @@ const updateCharacterMove = (characterSet: CharacterSet, myFlag: boolean) => {
 
       //말풍선이 함께 무빙
       characterSet.chrFlag.msg?.setX(characterSet.character.x);
-      characterSet.chrFlag.msg?.setY(characterSet.character.y - 35);
+      characterSet.chrFlag.msg?.setY(characterSet.character.y - 40);
 
       if(myFlag && characterSet.myFlagObject) {
         characterSet.myFlagObject.setX(characterSet.character.x);

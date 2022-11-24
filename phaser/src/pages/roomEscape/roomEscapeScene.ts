@@ -54,6 +54,22 @@ class RoomEscapeScene extends Phaser.Scene {
    //배경타일 로딩
    this.load.image('tile', `/phaser/resource/${resourcePath.objectPath}/tile.png`);
 
+   //각종리소스 호출
+   //pc1
+   this.load.image('pc1', `/phaser/resource/${resourcePath.objectPath}/pc1.png`);
+   //pc2
+   this.load.image('pc2', `/phaser/resource/${resourcePath.objectPath}/pc2.png`);
+   //desk1
+   this.load.image('desk1', `/phaser/resource/${resourcePath.objectPath}/desk1.png`);
+   //flower1
+   this.load.image('flower1', `/phaser/resource/${resourcePath.objectPath}/flower1.png`);
+   //bord1
+   this.load.image('board1', `/phaser/resource/${resourcePath.objectPath}/board1.png`);
+   //bord2
+   this.load.image('board2', `/phaser/resource/${resourcePath.objectPath}/board2.png`);
+
+   this.load.image('rdesk1', `/phaser/resource/${resourcePath.objectPath}/rdesk1.png`);
+
    //입력버튼 호출
    this.load.image('inputBtn', `/phaser/resource/${resourcePath.objectPath}/inputBtn.png`);
    //내 캐릭터 표시 이미지 호출
@@ -66,10 +82,46 @@ class RoomEscapeScene extends Phaser.Scene {
 
     //바닥 타일 생성
     this.add.image(400, 225, 'tile');
+    //pc1 생성
+    //this.matter.add.image(500, 100, 'pc1').setScale(0.07).setStatic(true);
+    //pc2 생성
+    //this.matter.add.image(200, 50, 'pc2').setScale(0.07).setStatic(true);
+
+    //desk1 생성
+    let x = 120;
+    this.matter.add.image(x, 430, 'desk1').setScale(0.07).setStatic(true);
+    this.matter.add.image(x+40, 430, 'desk1').setScale(0.07).setStatic(true);
+    this.matter.add.image(x+80, 430, 'desk1').setScale(0.07).setStatic(true);
+    this.matter.add.image(x+120, 430, 'desk1').setScale(0.07).setStatic(true);
+    this.matter.add.image(x+160, 430, 'desk1').setScale(0.07).setStatic(true);
+
+    this.matter.add.image(x, 330, 'desk1').setScale(0.07).setStatic(true);
+    this.matter.add.image(x+40, 330, 'desk1').setScale(0.07).setStatic(true);
+    this.matter.add.image(x+80, 330, 'desk1').setScale(0.07).setStatic(true);
+    this.matter.add.image(x+120, 330, 'desk1').setScale(0.07).setStatic(true);
+    this.matter.add.image(x+160, 330, 'desk1').setScale(0.07).setStatic(true);
+
+    x = 450;
+    this.matter.add.image(x, 430, 'desk1').setScale(0.07).setStatic(true);
+    this.matter.add.image(x+40, 430, 'desk1').setScale(0.07).setStatic(true);
+    this.matter.add.image(x+80, 430, 'desk1').setScale(0.07).setStatic(true);
+    this.matter.add.image(x+120, 430, 'desk1').setScale(0.07).setStatic(true);
+    this.matter.add.image(x+160, 430, 'desk1').setScale(0.07).setStatic(true);
+
+    this.matter.add.image(x, 330, 'desk1').setScale(0.07).setStatic(true);
+    this.matter.add.image(x+40, 330, 'desk1').setScale(0.07).setStatic(true);
+    this.matter.add.image(x+80, 330, 'desk1').setScale(0.07).setStatic(true);
+    this.matter.add.image(x+120, 330, 'desk1').setScale(0.07).setStatic(true);
+    this.matter.add.image(x+160, 330, 'desk1').setScale(0.07).setStatic(true);
+
+    //보드
+    this.matter.add.image(200, 30, 'board1').setScale(0.1).setStatic(true);
+    this.matter.add.image(300, 30, 'board2').setScale(0.12).setStatic(true);
+
+    this.matter.add.image(600, 100, 'rdesk1').setScale(0.07).setStatic(true);
 
     this.myCharacterSet.chrFlag.spriteName = RoomEscapeStore.mySprite;
     this.myCharacterSet.chrFlag.nick = RoomEscapeStore.myNick;
-    console.log('크리에이트 상황');
     console.log(this.myCharacterSet.chrFlag);
     //마이캐릭터 생성
     createCharacter(this, this.myCharacterSet, true);
@@ -229,7 +281,7 @@ class RoomEscapeScene extends Phaser.Scene {
   createInteraction() {
     //사용자 입력 부분
     //채팅 입력창 생성
-    this.inputChat = new InputText(this.scene.scene, 350, this.gameSetting.height - 50, 500, 30, {backgroundColor: '#FFFFFF', type: 'text', color: '#000000'}).setInteractive();
+    this.inputChat = new InputText(this.scene.scene, 350, this.gameSetting.height - 50, 500, 30, {backgroundColor: '#000000', type: 'text', color: '#33ff33', fontFamily: 'Ycomputer-Regular'}).setInteractive();
     this.scene.scene.add.existing(this.inputChat);
     this.inputChat.on('keydown', (inputText: any, e: any) => { 
       //엔터입력 취급

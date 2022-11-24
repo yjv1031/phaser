@@ -1,8 +1,8 @@
 import {ChrFlag, CharacterSet} from './roomEscapeInterface';
 
 
-// const serverUrl = 'ws://172.30.1.48:8080/webSocket';
-const serverUrl = 'ws://localhost:8080/webSocket';
+const serverUrl = 'ws://172.30.1.48:8080/webSocket';
+// const serverUrl = 'ws://localhost:8080/webSocket';
 let ws: WebSocket|null = null;
 
 //서버에 나의 새로운 캐릭터에 대한 메세지를 전달한다
