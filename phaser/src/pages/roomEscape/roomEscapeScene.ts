@@ -101,7 +101,7 @@ class RoomEscapeScene extends Phaser.Scene {
     this.matter.add.image(x+120, 330, 'desk1').setScale(0.07).setStatic(true);
     this.matter.add.image(x+160, 330, 'desk1').setScale(0.07).setStatic(true);
 
-    x = 450;
+    x = 500;
     this.matter.add.image(x, 430, 'desk1').setScale(0.07).setStatic(true);
     this.matter.add.image(x+40, 430, 'desk1').setScale(0.07).setStatic(true);
     this.matter.add.image(x+80, 430, 'desk1').setScale(0.07).setStatic(true);
@@ -118,7 +118,7 @@ class RoomEscapeScene extends Phaser.Scene {
     this.matter.add.image(200, 30, 'board1').setScale(0.1).setStatic(true);
     this.matter.add.image(300, 30, 'board2').setScale(0.12).setStatic(true);
 
-    this.matter.add.image(600, 100, 'rdesk1').setScale(0.07).setStatic(true);
+    //this.matter.add.image(600, 100, 'rdesk1').setScale(0.07).setStatic(true);
 
     this.myCharacterSet.chrFlag.spriteName = RoomEscapeStore.mySprite;
     this.myCharacterSet.chrFlag.nick = RoomEscapeStore.myNick;
