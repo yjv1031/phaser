@@ -53,6 +53,10 @@ body, html {
   margin: 0 auto;
 }
 
+.RoomEscapeWrapper {
+  margin-top: 100px;
+}
+
 #RoomEscapeGameReadyArea {
   width: 100%;
   height: 600px;

@@ -13,6 +13,10 @@ const playerSprite: Array<CharacterSheet> = [
     name: 'sanz',
     sumnail: 'sanz_sum'
   },
+  {
+    name: 'mario',
+    sumnail: 'mario_sum'
+  },
 ];
 
 const resourcePath: any = {

@@ -43,7 +43,7 @@ function RoomEscape() {
   }
 
   return useObserver(() => (
-    <div>
+    <div className="RoomEscapeWrapper">
       <div id="RoomEscapeWrap" className={`${gameReadyFlag ? '' : 'display_none'}`}>
         <div id="RoomEscapeGameDiv">
         </div>
