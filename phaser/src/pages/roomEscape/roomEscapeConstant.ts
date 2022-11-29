@@ -1,6 +1,7 @@
 import {CharacterSheet} from './roomEscapeInterface';
 
 const playerSprite: Array<CharacterSheet> = [
+  /* 
   {
     name: 'lidia',
     sumnail: 'lidia_sum'
@@ -8,6 +9,43 @@ const playerSprite: Array<CharacterSheet> = [
   {
     name: 'lidiaRed',
     sumnail: 'lidiaRed_sum'
+  },
+  */
+  {
+    name: 'w1',
+    sumnail: 'w1_sum'
+  },
+  {
+    name: 'm1',
+    sumnail: 'm1_sum'
+  },
+  {
+    name: 'w2',
+    sumnail: 'w2_sum'
+  },
+  {
+    name: 'm2',
+    sumnail: 'm2_sum'
+  },
+  {
+    name: 'm3',
+    sumnail: 'm3_sum'
+  },
+  {
+    name: 'm4',
+    sumnail: 'm4_sum'
+  },
+  {
+    name: 'w3',
+    sumnail: 'w3_sum'
+  },
+  {
+    name: 'w4',
+    sumnail: 'w4_sum'
+  },
+  {
+    name: 'w5',
+    sumnail: 'w5_sum'
   },
   {
     name: 'sanz',
@@ -20,18 +58,6 @@ const playerSprite: Array<CharacterSheet> = [
   {
     name: 'link',
     sumnail: 'link_sum'
-  },
-  {
-    name: 'w1',
-    sumnail: 'w1_sum'
-  },
-  {
-    name: 'm1',
-    sumnail: 'm1_sum'
-  },
-  {
-    name: 'w2',
-    sumnail: 'w2_sum'
   },
 ];
 
