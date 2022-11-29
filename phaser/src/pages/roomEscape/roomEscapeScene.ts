@@ -134,8 +134,8 @@ class RoomEscapeScene extends Phaser.Scene {
   update(time: number, delta: number): void {
     //캐릭터 움직임 갱신
     try {
-      updateCharacterMove(this.myCharacterSet, true);
-      this.orterCharacterSet.forEach((characterSet) => {updateCharacterMove(characterSet, false);});
+      updateCharacterMove(this.myCharacterSet, true, this);
+      this.orterCharacterSet.forEach((characterSet) => {updateCharacterMove(characterSet, false, this);});
     } catch(e) {
       console.log(`에러 ${this.orterCharacterSet.length}, myId: ${this.myCharacterSet.chrFlag.id}`);
       //, ${this.orterCharacterSet[0].chrFlag.id}, ${this.orterCharacterSet[1].chrFlag.id}
@@ -326,9 +326,10 @@ class RoomEscapeScene extends Phaser.Scene {
     
     //마우스 바닥 클릭 이벤트
     this.input.on('pointerdown', (event: any, param: any) => {
+      console.log(event);
       if(event.downY < this.gameSetting.height - 100){
-        this.myCharacterSet.chrFlag.downX = event.downX;
-        this.myCharacterSet.chrFlag.downY = event.downY;
+        this.myCharacterSet.chrFlag.downX = event.worldX;
+        this.myCharacterSet.chrFlag.downY = event.worldY;
         const param = {
           flag: 'move',
           downX: this.myCharacterSet.chrFlag.downX,
@@ -338,7 +339,7 @@ class RoomEscapeScene extends Phaser.Scene {
           spriteName: this.myCharacterSet.chrFlag.spriteName,
           nick: this.myCharacterSet.chrFlag.nick
         }
-        callWsMoveCharacterMsg(param);
+        //callWsMoveCharacterMsg(param);
       }
     });
   }

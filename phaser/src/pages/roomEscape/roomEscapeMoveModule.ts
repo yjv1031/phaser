@@ -23,10 +23,10 @@ const createCharacter = (gameScene: Phaser.Scene, characterSet: CharacterSet, my
   }
 }
 
-const updateCharacterMove = (characterSet: CharacterSet, myFlag: boolean) => {
+const updateCharacterMove = (characterSet: CharacterSet, myFlag: boolean, scene: Phaser.Scene|null) => {
   if(characterSet && characterSet.character) {
     //캐릭터의 목표 방향과 실제 캐릭터의 위치를 계산하여 무빙한다
-    if(Math.abs(characterSet.chrFlag.downY - characterSet.character.y) >= characterSet.chrFlag.speed * 2 || Math.abs(characterSet.chrFlag.downX - characterSet.character.x) >= characterSet.chrFlag.speed * 2) {
+    if(Math.abs(characterSet.chrFlag.downY - characterSet.character.y) >= characterSet.chrFlag.speed || Math.abs(characterSet.chrFlag.downX - characterSet.character.x) >= characterSet.chrFlag.speed) {
       const downY = characterSet.chrFlag.downY;
       const downX = characterSet.chrFlag.downX;
       const curY = characterSet.character.y;
@@ -55,6 +55,11 @@ const updateCharacterMove = (characterSet: CharacterSet, myFlag: boolean) => {
         characterP = `${characterSet.chrFlag.spriteName}4`;
       }
 
+      //혹여 애니메이션이 작동되지 않는다면 작동시킨다
+      if(!characterSet.character.anims.isPlaying) {
+        characterSet.character.anims.play(String(characterP), true);
+      }
+
       //캐릭터가 바라보는 방향이 변경된 경우이다
       if(curP != characterP) {
         characterSet.chrFlag.position = characterP;
@@ -69,6 +74,12 @@ const updateCharacterMove = (characterSet: CharacterSet, myFlag: boolean) => {
       if(myFlag && characterSet.myFlagObject) {
         characterSet.myFlagObject.setX(characterSet.character.x);
         characterSet.myFlagObject.setY(characterSet.character.y + 35);
+      }
+
+      //내 캐릭터일 경우 카메라 조정
+      if(myFlag && scene) {
+        //const cam = scene.cameras.main;
+        //cam.centerOn(characterSet.character.x, characterSet.character.y);
       }
       
     } else {
