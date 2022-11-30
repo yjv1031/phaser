@@ -1,3 +1,4 @@
+import InputText from 'phaser3-rex-plugins/plugins/inputtext';
 import {ChrFlag, CharacterSet} from './roomEscapeInterface';
 
 const createCharacter = (gameScene: Phaser.Scene, characterSet: CharacterSet, myFlag:boolean) => {
@@ -23,7 +24,7 @@ const createCharacter = (gameScene: Phaser.Scene, characterSet: CharacterSet, my
   }
 }
 
-const updateCharacterMove = (characterSet: CharacterSet, myFlag: boolean, scene: Phaser.Scene|null) => {
+const updateCharacterMove = (characterSet: CharacterSet, myFlag: boolean, scene: Phaser.Scene|null, inputChat: InputText|null, inputBtn: Phaser.GameObjects.Image|null) => {
   if(characterSet && characterSet.character) {
     //캐릭터의 목표 방향과 실제 캐릭터의 위치를 계산하여 무빙한다
     if(Math.abs(characterSet.chrFlag.downY - characterSet.character.y) >= characterSet.chrFlag.speed || Math.abs(characterSet.chrFlag.downX - characterSet.character.x) >= characterSet.chrFlag.speed) {
@@ -78,8 +79,17 @@ const updateCharacterMove = (characterSet: CharacterSet, myFlag: boolean, scene:
 
       //내 캐릭터일 경우 카메라 조정
       if(myFlag && scene) {
-        //const cam = scene.cameras.main;
-        //cam.centerOn(characterSet.character.x, characterSet.character.y);
+        const cam = scene.cameras.main;
+        cam.centerOn(characterSet.character.x, characterSet.character.y);
+        //입력창과 입력버튼이 함께 무빙
+        if(inputChat) {
+          inputChat.setX(characterSet.character.x -100);
+        }
+
+        /* 
+        if(inputBtn) {
+        }
+        */
       }
       
     } else {

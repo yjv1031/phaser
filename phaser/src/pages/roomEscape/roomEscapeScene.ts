@@ -41,7 +41,9 @@ class RoomEscapeScene extends Phaser.Scene {
   //기타 멀티플레이어들
   private orterCharacterSet: Array<CharacterSet> = [];
 
+  //입력개체
   private inputChat: InputText|null = null;
+  private inputBtn: Phaser.GameObjects.Image|null = null;
 
   constructor() {
     super({ key: 'RoomEscapeGameMain', active: true })
@@ -81,7 +83,7 @@ class RoomEscapeScene extends Phaser.Scene {
     createSpriteAnimation(this);
 
     //바닥 타일 생성
-    this.add.image(400, 225, 'tile');
+    this.add.image(this.gameSetting.width/2, this.gameSetting.height/2, 'tile');
     //pc1 생성
     //this.matter.add.image(500, 100, 'pc1').setScale(0.07).setStatic(true);
     //pc2 생성
@@ -134,8 +136,8 @@ class RoomEscapeScene extends Phaser.Scene {
   update(time: number, delta: number): void {
     //캐릭터 움직임 갱신
     try {
-      updateCharacterMove(this.myCharacterSet, true, this);
-      this.orterCharacterSet.forEach((characterSet) => {updateCharacterMove(characterSet, false, this);});
+      updateCharacterMove(this.myCharacterSet, true, this, this.inputChat, this.inputBtn);
+      this.orterCharacterSet.forEach((characterSet) => {updateCharacterMove(characterSet, false, this, null, null);});
     } catch(e) {
       console.log(`에러 ${this.orterCharacterSet.length}, myId: ${this.myCharacterSet.chrFlag.id}`);
       //, ${this.orterCharacterSet[0].chrFlag.id}, ${this.orterCharacterSet[1].chrFlag.id}
@@ -312,8 +314,10 @@ class RoomEscapeScene extends Phaser.Scene {
     });
 
     //채팅데이터 입력 버튼
-    const inputBtn = this.matter.add.sprite(670, this.gameSetting.height - 50, 'inputBtn', undefined, {label: 'inputBtn'}).setScale(1).setStatic(true).setInteractive();
-    inputBtn.on('pointerdown', () => {
+    //버튼 생략
+    /* 
+    this.inputBtn = this.add.image(670, this.gameSetting.height - 50, 'inputBtn').setScale(1);
+    this.inputBtn.on('pointerdown', () => {
       if(this.inputChat) {
         this.myCharacterSet.chrFlag.msgText = this.inputChat.text;
         this.myCharacterSet.chrFlag.msgTimer = this.gameSetting.msgTimer;
@@ -324,9 +328,24 @@ class RoomEscapeScene extends Phaser.Scene {
       }
     });
     
+    this.input.on('gameobjectdown', (param1: any, param2: any) => {
+      console.log(param2);
+    });
+    */
+    
     //마우스 바닥 클릭 이벤트
     this.input.on('pointerdown', (event: any, param: any) => {
-      console.log(event);
+      //월드 x축을 벗어날 수 없음
+      if(event.worldX <= 0 || event.worldX >= this.gameSetting.width) {
+        return;
+      }
+
+      //월드 y축을 벗어날 수 없음
+      if(event.worldY <= 0 || event.worldY >= this.gameSetting.height) {
+        console.log(event.worldY);
+        return;
+      }
+
       if(event.downY < this.gameSetting.height - 100){
         this.myCharacterSet.chrFlag.downX = event.worldX;
         this.myCharacterSet.chrFlag.downY = event.worldY;
@@ -339,7 +358,7 @@ class RoomEscapeScene extends Phaser.Scene {
           spriteName: this.myCharacterSet.chrFlag.spriteName,
           nick: this.myCharacterSet.chrFlag.nick
         }
-        //callWsMoveCharacterMsg(param);
+        callWsMoveCharacterMsg(param);
       }
     });
   }
