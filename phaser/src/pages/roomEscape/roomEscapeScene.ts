@@ -33,6 +33,7 @@ class RoomEscapeScene extends Phaser.Scene {
       id: '',
       spriteName: '',
       nick: '',
+      nickText: null,
     },
     character:  null,
     myFlagObject: null
@@ -54,7 +55,7 @@ class RoomEscapeScene extends Phaser.Scene {
    createSprite(this);
 
    //배경타일 로딩
-   this.load.image('tile', `/phaser/resource/${resourcePath.objectPath}/tile.png`);
+   this.load.image('tile', `/phaser/resource/${resourcePath.objectPath}/back_tile.jpg`);
 
    //각종리소스 호출
    //pc1
@@ -83,7 +84,7 @@ class RoomEscapeScene extends Phaser.Scene {
     createSpriteAnimation(this);
 
     //바닥 타일 생성
-    this.add.image(this.gameSetting.width/2, this.gameSetting.height/2, 'tile');
+    this.add.image(1100, 1200, 'tile');
     //pc1 생성
     //this.matter.add.image(500, 100, 'pc1').setScale(0.07).setStatic(true);
     //pc2 생성
@@ -188,7 +189,8 @@ class RoomEscapeScene extends Phaser.Scene {
       downY: this.myCharacterSet.chrFlag.downY,
       speed: this.myCharacterSet.chrFlag.speed,
       id: this.myCharacterSet.chrFlag.id,
-      spriteName: this.myCharacterSet.chrFlag.spriteName
+      spriteName: this.myCharacterSet.chrFlag.spriteName,
+      nick: this.myCharacterSet.chrFlag.nick
     };
     callWsResetList(param);
   }
@@ -248,6 +250,7 @@ class RoomEscapeScene extends Phaser.Scene {
         if(this.orterCharacterSet[i]) {
           const tempSheet = this.orterCharacterSet[i];
           this.orterCharacterSet = this.orterCharacterSet.filter((item, idx) => {return i != idx});
+          tempSheet.chrFlag.nickText?.setText("");
           tempSheet.character?.destroy();
         }
       }
@@ -267,7 +270,8 @@ class RoomEscapeScene extends Phaser.Scene {
         msgEnterFlag: true,
         id: onlineList[i].sessionId,
         spriteName: onlineList[i].spriteName,
-        nick: onlineList[i].nick
+        nick: onlineList[i].nick,
+        nickText: null
       }
       const param = {
         chrFlag: tempChrFlag,
@@ -283,35 +287,36 @@ class RoomEscapeScene extends Phaser.Scene {
   createInteraction() {
     //사용자 입력 부분
     //채팅 입력창 생성
-    this.inputChat = new InputText(this.scene.scene, 350, this.gameSetting.height - 50, 500, 30, {backgroundColor: '#000000', type: 'text', color: '#33ff33', fontFamily: 'Ycomputer-Regular'}).setInteractive();
-    this.scene.scene.add.existing(this.inputChat);
-    this.inputChat.on('keydown', (inputText: any, e: any) => { 
-      //엔터입력 취급
-      if(e.code == 'NumpadEnter' || e.code == 'Enter') {
-        if(this.myCharacterSet.chrFlag.msgEnterFlag) {
-          if(this.inputChat) {
-            this.myCharacterSet.chrFlag.msgEnterFlag = false;
-            this.myCharacterSet.chrFlag.msgText = this.inputChat.text;
-            this.myCharacterSet.chrFlag.msgTimer = this.gameSetting.msgTimer;
-            this.inputChat.setText("");
-            callWsSendChatMsg(this.myCharacterSet.chrFlag.msgText, this.myCharacterSet.chrFlag.id, this.myCharacterSet.chrFlag.nick);
-
-            //나의 채팅데이터 입력
-            RoomEscapeStore.insertChat(this.myCharacterSet.chrFlag.nick, this.myCharacterSet.chrFlag.msgText);
-
-            //연속 입력행위를 제한한다
-            setTimeout(() => {
-              this.myCharacterSet.chrFlag.msgEnterFlag = true;
-            },this.gameSetting.continueTimer);
-          }
-        } else {
-          if(this.inputChat) {
-            this.inputChat.setText("");
+    if(this.myCharacterSet && this.myCharacterSet.character) {
+      this.inputChat = new InputText(this.scene.scene, this.myCharacterSet.character.x-50, this.myCharacterSet.character.y + 270, 500, 30, {backgroundColor: '#000000', type: 'text', color: '#33ff33', fontFamily: 'Ycomputer-Regular'}).setInteractive();
+      this.scene.scene.add.existing(this.inputChat);
+      this.inputChat.on('keydown', (inputText: any, e: any) => { 
+        //엔터입력 취급
+        if(e.code == 'NumpadEnter' || e.code == 'Enter') {
+          if(this.myCharacterSet.chrFlag.msgEnterFlag) {
+            if(this.inputChat) {
+              this.myCharacterSet.chrFlag.msgEnterFlag = false;
+              this.myCharacterSet.chrFlag.msgText = this.inputChat.text;
+              this.myCharacterSet.chrFlag.msgTimer = this.gameSetting.msgTimer;
+              this.inputChat.setText("");
+              callWsSendChatMsg(this.myCharacterSet.chrFlag.msgText, this.myCharacterSet.chrFlag.id, this.myCharacterSet.chrFlag.nick);
+  
+              //나의 채팅데이터 입력
+              RoomEscapeStore.insertChat(this.myCharacterSet.chrFlag.nick, this.myCharacterSet.chrFlag.msgText);
+  
+              //연속 입력행위를 제한한다
+              setTimeout(() => {
+                this.myCharacterSet.chrFlag.msgEnterFlag = true;
+              },this.gameSetting.continueTimer);
+            }
+          } else {
+            if(this.inputChat) {
+              this.inputChat.setText("");
+            }
           }
         }
-      }
-
-    });
+      });
+    }
 
     //채팅데이터 입력 버튼
     //버튼 생략
@@ -346,7 +351,7 @@ class RoomEscapeScene extends Phaser.Scene {
         return;
       }
 
-      if(event.downY < this.gameSetting.height - 100){
+      if(event.downY < this.gameSetting.height - 50){
         this.myCharacterSet.chrFlag.downX = event.worldX;
         this.myCharacterSet.chrFlag.downY = event.worldY;
         const param = {

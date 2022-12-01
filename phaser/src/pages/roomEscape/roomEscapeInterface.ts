@@ -14,7 +14,8 @@ interface ChrFlag {
   msgEnterFlag: boolean,
   id: string,
   spriteName: string,
-  nick: string
+  nick: string,
+  nickText: Phaser.GameObjects.Text|null,
 }
 
 interface CharacterSet {

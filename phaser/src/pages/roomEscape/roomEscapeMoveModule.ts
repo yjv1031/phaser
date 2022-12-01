@@ -21,6 +21,15 @@ const createCharacter = (gameScene: Phaser.Scene, characterSet: CharacterSet, my
   //나의 캐릭터일 경우 표시해준다
   if(myFlag) {
     characterSet.myFlagObject = gameScene.add.image(characterSet.character.x, characterSet.character.y + 35, 'myFlag').setScale(0.2);
+  } else {
+    //다른사람의 캐릭터일 경우 닉네임을 표시해 준다
+    characterSet.chrFlag.nickText = gameScene.add.text(characterSet.character.x, characterSet.character.y +35, "", {
+      font: "20px Ycomputer-Regular",
+      color: "#ffffff",
+      // backgroundColor: "#000000",
+      align: "center"
+    });
+    characterSet.chrFlag.nickText.setText(characterSet.chrFlag.nick);
   }
 }
 
@@ -83,13 +92,18 @@ const updateCharacterMove = (characterSet: CharacterSet, myFlag: boolean, scene:
         cam.centerOn(characterSet.character.x, characterSet.character.y);
         //입력창과 입력버튼이 함께 무빙
         if(inputChat) {
-          inputChat.setX(characterSet.character.x -100);
+          inputChat.setX(characterSet.character.x - 50);
+          inputChat.setY(characterSet.character.y + 270);
         }
 
         /* 
         if(inputBtn) {
         }
         */
+      } else {
+        //다른사람 캐릭터일 경우 하단에 닉네임을 같이 이동한다
+        characterSet.chrFlag.nickText?.setX(characterSet.character.x);
+        characterSet.chrFlag.nickText?.setY(characterSet.character.y + 35);
       }
       
     } else {
